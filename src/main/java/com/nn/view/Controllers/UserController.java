@@ -1,32 +1,34 @@
 package com.nn.view.Controllers;
 
 import java.util.List;
+import java.util.Optional;
 
+import javax.persistence.criteria.Predicate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nn.data.User.User;
-import com.nn.service.DetailsService;
-import com.nn.service.TestDetailsService;
+import com.nn.entities.User;
+import com.nn.entities.repository.UserRespository;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
-	DetailsService svc;
-	{
-		//TODO spring injection
-		svc = new TestDetailsService();
-	}
+	@Autowired
+	UserRespository repository;
 
-	@RequestMapping(value = "/api/list/users", method = RequestMethod.GET)
-	public List<User> getUsers() {
-		return svc.getUsers();
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	Optional<User> getUser(@PathVariable Long id) {
+		return repository.findById(id);
 	}
-	@RequestMapping(value = "/api/user", method = RequestMethod.GET)
-	public List<User> getUser(@PathVariable long userid) {
-		return svc.getUsers();
-	}
-	
 }
