@@ -1,19 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
      http://www.springframework.org/schema/beans/spring-beans.xsd
      http://www.springframework.org/schema/data/jpa
      http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
       http://www.springframework.org/schema/context 
-      http://www.springframework.org/schema/context/spring-context.xsd
-      http://www.springframework.org/schema/oxm
-    http://www.springframework.org/schema/oxm/spring-oxm.xsd">
+      http://www.springframework.org/schema/context/spring-context.xsd">
 	<context:property-placeholder location="classpath:app.properties" />
 	<context:component-scan base-package="com.nn" />
 	<jpa:repositories base-package="com.nn.entities.repository" />
-	<oxm:jaxb2-marshaller context-path="com.nn.entities" />
-
+	<bean
+		class="org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration" />
+	<bean id="datasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="${spring.datasource.url}" />
+		<property name="username" value="${spring.datasource.username}" />
+		<property name="password" value="${spring.datasource.password}" />
+		<!--<property name="socketTimeout" value="10"/> -->
+		<!-- <property name="connectionProperties"> <props> <prop key="socketTimeout">10</prop> 
+			</props> </property> -->
+	</bean>
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="datasource" />
+		<property name="packagesToScan" value="com.nn.entities" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL94Dialect</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- xmlns:oxm="http://www.springframework.org/schema/oxm" -->
+	<!-- http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd -->
+	<!-- <oxm:jaxb2-marshaller context-path="com.nn.entities" /> -->
 </beans>
 

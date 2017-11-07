@@ -1,7 +1,7 @@
 package com.nn.entities.test;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(ArrivalController.class)
+//@RunWith(SpringRunner.class)
+//@WebMvcTest(UsersControllerTest.class)
 public class UsersControllerTest {
 
 	
