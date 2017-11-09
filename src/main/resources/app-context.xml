@@ -17,11 +17,14 @@
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="url" value="${spring.datasource.url}" />
-		<property name="username" value="${spring.datasource.username}" />
-		<property name="password" value="${spring.datasource.password}" />
 		<!--<property name="socketTimeout" value="10"/> -->
-		<!-- <property name="connectionProperties"> <props> <prop key="socketTimeout">10</prop> 
-			</props> </property> -->
+		<property name="connectionProperties">
+			<props>
+				<prop key="user">${spring.datasource.username}</prop>
+				<prop key="password">${spring.datasource.password}</prop>
+				<prop key="logLevel">2</prop>
+			</props>
+		</property>
 	</bean>
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -32,7 +35,8 @@
 		</property>
 		<property name="jpaProperties">
 			<props>
-				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+				<prop key="hibernate.hbm2ddl.auto">validate</prop>
+				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>								
 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL94Dialect</prop>
 			</props>
 		</property>
@@ -41,4 +45,3 @@
 	<!-- http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd -->
 	<!-- <oxm:jaxb2-marshaller context-path="com.nn.entities" /> -->
 </beans>
-

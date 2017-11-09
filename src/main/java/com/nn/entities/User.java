@@ -11,8 +11,8 @@ import org.hibernate.annotations.ColumnTransformer;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity(name = "User")
-@Table(name = "user")
+@Entity
+@Table(name = "NN_USER")
 public class User {
 
 	@Id
