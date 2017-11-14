@@ -7,6 +7,35 @@
 	<packaging>war</packaging>
 	<name>Number nagar middle layer</name>
 	<description>	</description>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<postgres.user.name>postgres</postgres.user.name>
+				<postgres.db>nn</postgres.db>
+				<postgres.password>nnpassword</postgres.password>
+				<postgres.port>5432</postgres.port>
+				<postgres.hostname>db.postgres.com</postgres.hostname>
+				<ddl.option>create-drop</ddl.option>
+				<wildfly.deployment.dir>/opt/jboss/wildfly/standalone/deployments/</wildfly.deployment.dir>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<ddl.option>validate</ddl.option>
+			</properties>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>prod</value>
+				</property>
+			</activation>
+		</profile>
+	</profiles>
 	<properties>
 		<spring.version>5.0.1.RELEASE</spring.version>
 		<jdk.version>1.8</jdk.version>
@@ -78,6 +107,18 @@
 	</dependencies>
 	<build>
 		<finalName>nn-web</finalName>
+		<resources>
+			<resource>
+				<directory>/opt/workspace/gitrepo/nn-web/src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>/opt/workspace/gitrepo/nn-web/src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -88,15 +129,133 @@
 					<target>${jdk.version}</target>
 				</configuration>
 			</plugin>
-			<!-- embedded Jetty server, for testing -->
-			<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-maven-plugin -->
-			<!-- <plugin> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
-				<version>9.4.7.v20170914</version> <configuration> <scanIntervalSeconds>10</scanIntervalSeconds> 
-				<webApp> <contextPath>/nn</contextPath> </webApp> </configuration> </plugin> -->
-			<!-- <plugin> <groupId>org.wildfly.plugins</groupId> <artifactId>wildfly-maven-plugin</artifactId> 
-				<version>1.1.0.Alpha5</version> <configuration> <hostname>127.0.0.1</hostname> 
-				<port>9990</port> <username>admin</username> <password>admin</password> <name>spring4ajax.war</name> 
-				</configuration> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.20.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${project.version}</version>
+							<type>${project.packaging}</type>
+							<destFileName>${project.build.finalName}.${project.packaging}</destFileName>
+						</artifactItem>
+					</artifactItems>
+					<outputDirectory>target/test-classes/wildfly/deployments</outputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.23.0</version>
+				<executions>
+					<execution>
+						<id>prepare-postgres-db</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<images>
+								<image>
+									<name>postgres:10</name>
+									<alias>postgres</alias>
+									<build>
+										<dockerFileDir>${project.build.testoutputDirectory}/postgres</dockerFileDir>
+									</build>
+									<run>
+										<namingStrategy>alias</namingStrategy>
+										<dependsOn />
+										<ports>
+											<port>5432:5432</port>
+										</ports>
+										<log>
+											<prefix>POSTGRES::</prefix>
+											<date>default</date>
+											<color>cyan</color>
+										</log>
+										<wait>
+											<tcp>
+												<ports>
+													<port>5432</port>
+												</ports>
+											</tcp>
+										</wait>
+									</run>
+								</image>
+								<image>
+									<name>jboss/wildfly:10.1.0.Final</name>
+									<alias>wildfly</alias>
+									<build>
+										<dockerFileDir>${project.build.testoutputDirectory}/wildfly</dockerFileDir>
+									</build>
+									<run>
+										<namingStrategy>alias</namingStrategy>
+										<volumes>
+											<bind>
+												<volume>${project.build.testoutputDirectory}/wildfly/deployments:/mnt</volume>
+											</bind>
+										</volumes>
+										<dependsOn>
+											<container>${postgres.hostname}</container>
+										</dependsOn>
+										<links>
+											<link>postgres:${postgres.hostname}</link>
+										</links>
+										<ports>
+											<port>8080:8080</port>
+										</ports>
+										<log>
+											<prefix>WILDFLY::</prefix>
+											<date>default</date>
+											<color>yellow</color>
+										</log>
+										<wait>
+											<http>
+												<url>http://localhost:8080/</url>
+											</http>
+											<exec>
+											<postStart>cp /mnt/nn-web.war ${wildfly.deployment.dir}</postStart>
+											</exec>
+										</wait>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</execution>
+					<execution>
+						<id>remove-containers</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
