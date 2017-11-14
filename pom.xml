@@ -229,7 +229,7 @@
 										<namingStrategy>alias</namingStrategy>
 										<volumes>
 											<bind>
-												<volume>target/test-classes/wildfly/deployments:/mnt</volume>
+												<volume>target/test-classes/wildfly/deployments:/mnt/war</volume>
 											</bind>
 										</volumes>
 										<dependsOn>
@@ -251,7 +251,7 @@
 												<url>http://localhost:8080/</url>
 											</http>
 											<exec>
-												<postStart>cp /mnt/nn-web.war ${wildfly.deployment.dir}</postStart>
+												<postStart>cp /mnt/war/nn-web.war ${wildfly.deployment.dir}</postStart>
 											</exec>
 										</wait>
 									</run>
