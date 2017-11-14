@@ -15,7 +15,7 @@
 				<postgres.db>nn</postgres.db>
 				<postgres.password>nnpassword</postgres.password>
 				<postgres.port>5432</postgres.port>
-				<postgres.hostname>db.postgres.com</postgres.hostname>
+				<postgres.hostname>postgres.db</postgres.hostname>
 				<ddl.option>create-drop</ddl.option>
 				<wildfly.deployment.dir>/opt/jboss/wildfly/standalone/deployments/</wildfly.deployment.dir>
 			</properties>
@@ -45,6 +45,7 @@
 		<jcl.slf4j.version>1.7.25</jcl.slf4j.version>
 		<servletapi.version>3.1.0</servletapi.version>
 		<postgres.version>9.1-901-1.jdbc4</postgres.version>
+		<resteasy.version>3.0.14.Final</resteasy.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -59,10 +60,17 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+		<!-- remove in favour of jboss resteasy <dependency> <groupId>javax.xml.bind</groupId> 
+			<artifactId>jaxb-api</artifactId> <version>${jaxb.version}</version> </dependency> -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>${jaxb.version}</version>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-servlet-initializer</artifactId>
+			<version>${resteasy.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+			<version>${resteasy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -189,6 +197,10 @@
 									</build>
 									<run>
 										<namingStrategy>alias</namingStrategy>
+										<env>
+											<POSTGRES_PASSWORD>${postgres.password}</POSTGRES_PASSWORD>
+											<POSTGRES_DB>${postgres.db}</POSTGRES_DB>
+										</env>
 										<dependsOn />
 										<ports>
 											<port>5432:5432</port>
@@ -217,11 +229,11 @@
 										<namingStrategy>alias</namingStrategy>
 										<volumes>
 											<bind>
-												<volume>${project.build.testoutputDirectory}/wildfly/deployments:/mnt</volume>
+												<volume>target/test-classes/wildfly/deployments:/mnt</volume>
 											</bind>
 										</volumes>
 										<dependsOn>
-											<container>${postgres.hostname}</container>
+											<container>postgres</container>
 										</dependsOn>
 										<links>
 											<link>postgres:${postgres.hostname}</link>
@@ -239,7 +251,7 @@
 												<url>http://localhost:8080/</url>
 											</http>
 											<exec>
-											<postStart>cp /mnt/nn-web.war ${wildfly.deployment.dir}</postStart>
+												<postStart>cp /mnt/nn-web.war ${wildfly.deployment.dir}</postStart>
 											</exec>
 										</wait>
 									</run>
