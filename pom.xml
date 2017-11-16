@@ -243,7 +243,7 @@
 										</log>
 										<wait>
 											<log>Deployed "${project.build.finalName}\.${project.packaging}"</log>
-											<time>30000</time>
+											<time>50000</time>
 										</wait>
 										<!-- <wait> <http> <url>http://localhost:8080/</url> </http> </wait> -->
 									</run>
