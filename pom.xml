@@ -62,16 +62,10 @@
 		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
 		<!-- remove in favour of jboss resteasy <dependency> <groupId>javax.xml.bind</groupId> 
 			<artifactId>jaxb-api</artifactId> <version>${jaxb.version}</version> </dependency> -->
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-servlet-initializer</artifactId>
-			<version>${resteasy.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-client</artifactId>
-			<version>${resteasy.version}</version>
-		</dependency>
+		<!-- <dependency> <groupId>org.jboss.resteasy</groupId> <artifactId>resteasy-servlet-initializer</artifactId> 
+			<version>${resteasy.version}</version> </dependency> <dependency> <groupId>org.jboss.resteasy</groupId> 
+			<artifactId>resteasy-client</artifactId> <version>${resteasy.version}</version> 
+			</dependency> -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -216,6 +210,7 @@
 													<port>5432</port>
 												</ports>
 											</tcp>
+											<time>20000</time>
 										</wait>
 									</run>
 								</image>
@@ -229,7 +224,7 @@
 										<namingStrategy>alias</namingStrategy>
 										<volumes>
 											<bind>
-												<volume>target/test-classes/wildfly/deployments:/mnt/war</volume>
+												<volume>target/test-classes/wildfly/deployments:${wildfly.deployment.dir}</volume>
 											</bind>
 										</volumes>
 										<dependsOn>
@@ -247,13 +242,10 @@
 											<color>yellow</color>
 										</log>
 										<wait>
-											<http>
-												<url>http://localhost:8080/</url>
-											</http>
-											<exec>
-												<postStart>cp /mnt/war/nn-web.war ${wildfly.deployment.dir}</postStart>
-											</exec>
+											<log>Deployed "${project.build.finalName}\.${project.packaging}"</log>
+											<time>30000</time>
 										</wait>
+										<!-- <wait> <http> <url>http://localhost:8080/</url> </http> </wait> -->
 									</run>
 								</image>
 							</images>
@@ -265,6 +257,9 @@
 						<goals>
 							<goal>stop</goal>
 						</goals>
+						<configuration>
+							<keepRunning>true</keepRunning>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
