@@ -12,6 +12,9 @@ class CustomRestMvcConfiguration {
 	@Value("${rest.api.base.path}")
 	String basePath;
 
+	@Value("${rest.api.returnBodyOnCreate}")
+	Boolean returnBody;
+
 	@Bean
 	public RepositoryRestConfigurer repositoryRestConfigurer() {
 
@@ -20,6 +23,7 @@ class CustomRestMvcConfiguration {
 			@Override
 			public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
 				config.setBasePath(basePath);
+				config.setReturnBodyForPutAndPost(returnBody);
 			}
 		};
 	}
