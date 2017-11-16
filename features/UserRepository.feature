@@ -8,7 +8,7 @@ Scenario:
 
 Scenario Outline: Persist Users 
 			And the following users are to be created
-			When User requests POST on "user" with request Fields=<Fields>&serviceType=<serviceType>&networkInstanceId=<networkInstanceId>&networkInstanceType=<networkInstanceType>&specificationList.Category[]=<specificationList.Category>
+			When User requests "POST" on "user" with request Fields=<Fields>&serviceType=<serviceType>&networkInstanceId=<networkInstanceId>&networkInstanceType=<networkInstanceType>&specificationList.Category[]=<specificationList.Category>
 			Then User should get a response with header containing "Srims-request-id" and a JSON body with non-zero length of "specificationList"
 Examples: 
 		|Fields					|serviceType	|	networkInstanceId				|	networkInstanceType			|specificationList.Category	|

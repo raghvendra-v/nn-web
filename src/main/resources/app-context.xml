@@ -17,11 +17,9 @@
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="url" value="${spring.datasource.url}" />
-		<!--  
-		<property name="username" value="${spring.datasource.username}" />
-		<property name="password" value="${spring.datasource.password}" />
-		<property name="socketTimeout" value="10"/>
-		-->
+		<!-- <property name="username" value="${spring.datasource.username}" /> 
+			<property name="password" value="${spring.datasource.password}" /> <property 
+			name="socketTimeout" value="10"/> -->
 		<property name="connectionProperties">
 			<props>
 				<prop key="user">${spring.datasource.username}</prop>
@@ -44,7 +42,7 @@
 			</props>
 		</property>
 	</bean>
-	<!-- xmlns:oxm="http://www.springframework.org/schema/oxm" -->
-	<!-- http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd -->
-	<!-- <oxm:jaxb2-marshaller context-path="com.nn.entities" /> -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
 </beans>

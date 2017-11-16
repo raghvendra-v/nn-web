@@ -1,6 +1,9 @@
 package com.nn.entities;
 
+import java.security.CryptoPrimitive;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +30,7 @@ public class User {
 	private String email;
 
 	@Column
-	@ColumnTransformer(read = "pgp_sym_decrypt(creditCardNumber, ‘topckrate’)", write = "pgp_sym_encrypt(?, 'topckrate')")
+	@Convert(converter = CryptoConverter.class)
 	@JsonIgnore
 	private String password;
 

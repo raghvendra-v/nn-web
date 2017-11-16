@@ -38,39 +38,24 @@
 	</profiles>
 	<properties>
 		<spring.version>5.0.1.RELEASE</spring.version>
-		<jdk.version>1.8</jdk.version>
-		<jackson.version>2.9.2</jackson.version>
-		<jaxb.version>2.3.0</jaxb.version>
+		<spring.data.rest.version>3.0.1.RELEASE</spring.data.rest.version>
+		<spring.data.jpa.version>2.0.0.RELEASE</spring.data.jpa.version>
 		<logback.version>1.2.3</logback.version>
 		<jcl.slf4j.version>1.7.25</jcl.slf4j.version>
-		<servletapi.version>3.1.0</servletapi.version>
 		<postgres.version>9.1-901-1.jdbc4</postgres.version>
-		<resteasy.version>3.0.14.Final</resteasy.version>
 	</properties>
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-rest-webmvc -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
+			<version>${spring.data.rest.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-		<!-- remove in favour of jboss resteasy <dependency> <groupId>javax.xml.bind</groupId> 
-			<artifactId>jaxb-api</artifactId> <version>${jaxb.version}</version> </dependency> -->
-		<!-- <dependency> <groupId>org.jboss.resteasy</groupId> <artifactId>resteasy-servlet-initializer</artifactId> 
-			<version>${resteasy.version}</version> </dependency> <dependency> <groupId>org.jboss.resteasy</groupId> 
-			<artifactId>resteasy-client</artifactId> <version>${resteasy.version}</version> 
-			</dependency> -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servletapi.version}</version>
-			<scope>provided</scope>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>2.0.1.RELEASE</version>
 		</dependency>
 		<!-- Logging -->
 		<dependency>
@@ -82,18 +67,6 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-rest-webmvc -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-rest-webmvc</artifactId>
-			<version>3.0.0.RELEASE</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
-			<version>2.0.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -127,8 +100,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -200,7 +173,7 @@
 											<port>5432:5432</port>
 										</ports>
 										<log>
-											<prefix>POSTGRES::</prefix>
+											<prefix>POSTGRES ></prefix>
 											<date>default</date>
 											<color>cyan</color>
 										</log>
@@ -237,12 +210,12 @@
 											<port>8080:8080</port>
 										</ports>
 										<log>
-											<prefix>WILDFLY::</prefix>
+											<prefix>WILDFLY ></prefix>
 											<date>default</date>
 											<color>yellow</color>
 										</log>
 										<wait>
-											<log>Deployed "${project.build.finalName}\.${project.packaging}"</log>
+											<log>Deployed\s"${project.build.finalName}\.${project.packaging}"</log>
 											<time>50000</time>
 										</wait>
 										<!-- <wait> <http> <url>http://localhost:8080/</url> </http> </wait> -->
