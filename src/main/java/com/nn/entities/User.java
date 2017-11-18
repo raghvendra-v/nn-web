@@ -35,6 +35,7 @@ public class User {
 	private String password;
 
 	protected User() {
+		this.password = "welcome";
 	};
 
 	/* Below constructor is Mostly for bulk user generation */

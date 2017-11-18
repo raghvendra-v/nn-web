@@ -11,7 +11,7 @@ import javax.persistence.Converter;
 public class CryptoConverter implements AttributeConverter<String, String> {
 
 	private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
-	private static final byte[] KEY = "t0pCkret".getBytes();
+	private static final byte[] KEY = "t0pCkretpassword".getBytes();
 
 	@Override
 	public String convertToDatabaseColumn(String password) {
