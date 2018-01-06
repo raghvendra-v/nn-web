@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.number-nagar</groupId>
 	<artifactId>web</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>war</packaging>
 	<name>Number nagar middle layer</name>
 	<description>	</description>
@@ -298,7 +298,8 @@
 							<goal>stop</goal>
 						</goals>
 						<configuration>
-							<keepRunning>true</keepRunning>
+							<keepRunning>false</keepRunning>
+							<keepContainer>false</keepContainer>
 						</configuration>
 					</execution>
 				</executions>
