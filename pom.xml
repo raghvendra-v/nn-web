@@ -210,18 +210,13 @@
 				<configuration>
 					<images>
 						<image>
-							<name>postgres:10</name>
+							<name>nn-db</name>
 							<alias>postgres</alias>
 							<build>
 								<dockerFileDir>${project.basedir}/src/test/resources/postgres</dockerFileDir>
 							</build>
 							<run>
 								<namingStrategy>alias</namingStrategy>
-								<env>
-									<POSTGRES_PASSWORD>${postgres.password}</POSTGRES_PASSWORD>
-									<POSTGRES_DB>${postgres.db}</POSTGRES_DB>
-								</env>
-								<dependsOn />
 								<ports>
 									<port>5432:5432</port>
 								</ports>
@@ -241,7 +236,7 @@
 							</run>
 						</image>
 						<image>
-							<name>jboss/wildfly:10.1.0.Final</name>
+							<name>nn-web-wildfly</name>
 							<alias>wildfly</alias>
 							<build>
 								<dockerFileDir>${project.basedir}/src/test/resources/wildfly</dockerFileDir>
@@ -250,7 +245,6 @@
 								</assembly>
 							</build>
 							<run>
-								<namingStrategy>alias</namingStrategy>
 								<dependsOn>
 									<container>postgres</container>
 								</dependsOn>
