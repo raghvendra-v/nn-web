@@ -217,6 +217,7 @@
 							</build>
 							<run>
 								<namingStrategy>alias</namingStrategy>
+								<hostname>${postgres.hostname}</hostname>
 								<ports>
 									<port>5432:5432</port>
 								</ports>
@@ -245,6 +246,7 @@
 								</assembly>
 							</build>
 							<run>
+								<namingStrategy>alias</namingStrategy>
 								<dependsOn>
 									<container>postgres</container>
 								</dependsOn>
