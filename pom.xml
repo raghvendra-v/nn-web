@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.number-nagar</groupId>
 	<artifactId>web</artifactId>
@@ -178,111 +177,23 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.0.2</version>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<artifactItems>
-						<artifactItem>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>${project.artifactId}</artifactId>
-							<version>${project.version}</version>
-							<type>${project.packaging}</type>
-							<destFileName>${project.build.finalName}.${project.packaging}</destFileName>
-						</artifactItem>
-					</artifactItems>
-					<outputDirectory>target/test-classes/wildfly/deployments</outputDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>0.23.0</version>
 				<executions>
+					<execution>
+						<id>default-build</id>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>prepare-stack</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>start</goal>
 						</goals>
-						<configuration>
-							<images>
-								<image>
-									<name>postgres:10</name>
-									<alias>postgres</alias>
-									<build>
-										<dockerFileDir>${project.build.testoutputDirectory}/postgres</dockerFileDir>
-									</build>
-									<run>
-										<namingStrategy>alias</namingStrategy>
-										<env>
-											<POSTGRES_PASSWORD>${postgres.password}</POSTGRES_PASSWORD>
-											<POSTGRES_DB>${postgres.db}</POSTGRES_DB>
-										</env>
-										<dependsOn />
-										<ports>
-											<port>5432:5432</port>
-										</ports>
-										<log>
-											<prefix>[POSTGRES]</prefix>
-											<date>default</date>
-											<color>cyan</color>
-										</log>
-										<wait>
-											<tcp>
-												<ports>
-													<port>5432</port>
-												</ports>
-											</tcp>
-											<time>30000</time>
-										</wait>
-									</run>
-								</image>
-								<image>
-									<name>jboss/wildfly:10.1.0.Final</name>
-									<alias>wildfly</alias>
-									<build>
-										<dockerFileDir>${project.build.testoutputDirectory}/wildfly</dockerFileDir>
-									</build>
-									<run>
-										<namingStrategy>alias</namingStrategy>
-										<volumes>
-											<bind>
-												<volume>target/test-classes/wildfly/deployments:${wildfly.deployment.dir}</volume>
-											</bind>
-										</volumes>
-										<dependsOn>
-											<container>postgres</container>
-										</dependsOn>
-										<links>
-											<link>postgres:${postgres.hostname}</link>
-										</links>
-										<ports>
-											<port>8080:8080</port>
-										</ports>
-										<log>
-											<prefix>[WILDFLY]</prefix>
-											<date>default</date>
-											<color>yellow</color>
-										</log>
-										<wait>
-											<log>Deployed\s"${project.build.finalName}\.${project.packaging}"</log>
-											<time>90000</time>
-										</wait>
-										<!-- <wait> <http> <url>http://localhost:8080/</url> </http> </wait> -->
-									</run>
-								</image>
-							</images>
-						</configuration>
 					</execution>
 					<execution>
 						<id>remove-containers</id>
@@ -296,6 +207,72 @@
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<images>
+						<image>
+							<name>postgres:10</name>
+							<alias>postgres</alias>
+							<build>
+								<dockerFileDir>${project.basedir}/src/test/resources/postgres</dockerFileDir>
+							</build>
+							<run>
+								<namingStrategy>alias</namingStrategy>
+								<env>
+									<POSTGRES_PASSWORD>${postgres.password}</POSTGRES_PASSWORD>
+									<POSTGRES_DB>${postgres.db}</POSTGRES_DB>
+								</env>
+								<dependsOn />
+								<ports>
+									<port>5432:5432</port>
+								</ports>
+								<log>
+									<prefix>[POSTGRES]</prefix>
+									<date>default</date>
+									<color>cyan</color>
+								</log>
+								<wait>
+									<tcp>
+										<ports>
+											<port>5432</port>
+										</ports>
+									</tcp>
+									<time>30000</time>
+								</wait>
+							</run>
+						</image>
+						<image>
+							<name>jboss/wildfly:10.1.0.Final</name>
+							<alias>wildfly</alias>
+							<build>
+								<dockerFileDir>${project.basedir}/src/test/resources/wildfly</dockerFileDir>
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+							</build>
+							<run>
+								<namingStrategy>alias</namingStrategy>
+								<dependsOn>
+									<container>postgres</container>
+								</dependsOn>
+								<links>
+									<link>postgres:${postgres.hostname}</link>
+								</links>
+								<ports>
+									<port>8080:8080</port>
+								</ports>
+								<log>
+									<prefix>[WILDFLY]</prefix>
+									<date>default</date>
+									<color>yellow</color>
+								</log>
+								<wait>
+									<log>Deployed\s"${project.build.finalName}\.${project.packaging}"</log>
+									<time>90000</time>
+								</wait>
+							</run>
+						</image>
+					</images>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
